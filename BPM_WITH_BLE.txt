@@ -1,0 +1,182 @@
+#include <Arduino.h>
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
+
+
+#include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
+#include <Wire.h>
+
+#define LED_PIN             4
+
+#define HEATRATE_SDA        15
+#define HEATRATE_SCL        13
+#define HEATRATE_INT        4
+
+TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
+
+#include "MAX30105.h"
+#include "heartRate.h"
+
+MAX30105 particleSensor;
+
+const uint8_t RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
+uint8_t rates[RATE_SIZE]; //Array of heart rates
+uint8_t rateSpot = 0;
+long lastBeat = 0; //Time at which the last beat occurred
+
+float beatsPerMinute;
+int beatAvg;
+
+char buff[256];
+
+
+BLEServer* pServer = NULL;
+BLECharacteristic* pCharacteristic = NULL;
+bool deviceConnected = false;
+bool oldDeviceConnected = false;
+uint32_t value = 0;
+
+// See the following for generating UUIDs:
+// https://www.uuidgenerator.net/
+
+#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+
+
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+    };
+
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+    }
+};
+
+
+
+void setupBLE() {
+
+  // Create the BLE Device
+  BLEDevice::init("MyESP32");
+
+  // Create the BLE Server
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  // Create the BLE Service
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+
+  // Create a BLE Characteristic
+  pCharacteristic = pService->createCharacteristic(
+                      CHARACTERISTIC_UUID,
+                      BLECharacteristic::PROPERTY_READ   |
+                      BLECharacteristic::PROPERTY_WRITE  |
+                      BLECharacteristic::PROPERTY_NOTIFY |
+                      BLECharacteristic::PROPERTY_INDICATE
+                    );
+
+  // https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
+  // Create a BLE Descriptor
+  pCharacteristic->addDescriptor(new BLE2902());
+
+  // Start the service
+  pService->start();
+
+  // Start advertising
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->setScanResponse(false);
+  pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
+  BLEDevice::startAdvertising();
+  Serial.println("Waiting a client connection to notify...");
+}
+
+void setupBPM()
+{
+    tft.init();
+    tft.setRotation(1);
+    tft.setTextColor(TFT_GREEN, TFT_BLACK); // Note: the new fonts do not draw the background colour
+    tft.fillScreen(TFT_BLACK);
+    tft.setCursor(0, 0);
+
+    pinMode(LED_PIN, OUTPUT);
+
+    Wire1.begin(HEATRATE_SDA, HEATRATE_SCL);
+    // Initialize sensor
+    if (!particleSensor.begin(Wire1, 400000)) { //Use default I2C port, 400kHz speed
+        tft.setTextColor(TFT_RED, TFT_BLACK); // Note: the new fonts do not draw the background colour
+        tft.println("MAX30105 was not found");
+        delay(10000);   //delay ten sec to restart
+        esp_restart();
+    }
+
+    particleSensor.setup(); //Configure sensor with default settings
+    particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+    particleSensor.setPulseAmplitudeGreen(0); //Turn off Green LED
+}
+
+void setup() {
+  Serial.begin(115200);
+  setupBLE();
+  setupBPM();
+}
+
+void loop() {
+    // notify changed value
+    if (deviceConnected) {
+        long irValue = particleSensor.getIR();
+
+        if (checkForBeat(irValue) == true) {
+            //We sensed a beat!
+            long delta = millis() - lastBeat;
+            lastBeat = millis();
+    
+            beatsPerMinute = 60 / (delta / 1000.0);
+    
+            if (beatsPerMinute < 255 && beatsPerMinute > 20) {
+                rates[rateSpot++] = (uint8_t)beatsPerMinute; //Store this reading in the array
+                rateSpot %= RATE_SIZE; //Wrap variable
+    
+                //Take average of readings
+                beatAvg = 0;
+                for (uint8_t x = 0 ; x < RATE_SIZE ; x++)
+                    beatAvg += rates[x];
+                beatAvg /= RATE_SIZE;
+            }
+        }
+    
+        tft.fillScreen(TFT_BLACK);
+        snprintf(buff, sizeof(buff), "IR=%lu BPM=%.2f", irValue, beatsPerMinute);
+        tft.drawString(buff, 0, 0);
+        snprintf(buff, sizeof(buff), "Avg BPM=%d", beatAvg);
+        tft.drawString(buff, 0, 16);
+    
+        if (irValue < 50000)
+            digitalWrite(LED_PIN, 0);
+        else
+            digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+
+      
+        pCharacteristic->setValue(beatsPerMinute);
+        pCharacteristic->notify();
+        
+        delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
+    }
+    
+    // disconnecting
+    if (!deviceConnected && oldDeviceConnected) {
+        delay(500); // give the bluetooth stack the chance to get things ready
+        pServer->startAdvertising(); // restart advertising
+        Serial.println("start advertising");
+        oldDeviceConnected = deviceConnected;
+    }
+    
+    // connecting
+    if (deviceConnected && !oldDeviceConnected) {
+        // do stuff here on connecting
+        oldDeviceConnected = deviceConnected;
+    }
+}
