@@ -1,12 +1,23 @@
+/*
+    This is a student project.
+    
+    The goal is to transfer BPM data detected by MAX30105
+    to smart phone by using BLE (Bluetooth Low Energy).
+
+    The code is a combination of T-Wristband MAX30105 and BLE_notify.
+    You can find T-Wristband MAX30105 program in https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband
+    You can find BLE_notify program in the ESP32 official library
+*/
 #include <Arduino.h>
+#include <stdlib.h>
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLE2902.h>
-
-
 #include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
 #include <Wire.h>
+#include "MAX30105.h"
+#include "heartRate.h"
 
 #define LED_PIN             4
 
@@ -15,9 +26,6 @@
 #define HEATRATE_INT        4
 
 TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
-
-#include "MAX30105.h"
-#include "heartRate.h"
 
 MAX30105 particleSensor;
 
@@ -31,7 +39,7 @@ int beatAvg;
 
 char buff[256];
 
-
+// Configure ESP32 as the BLE Server
 BLEServer* pServer = NULL;
 BLECharacteristic* pCharacteristic = NULL;
 bool deviceConnected = false;
@@ -40,7 +48,6 @@ uint32_t value = 0;
 
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/
-
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 
@@ -55,8 +62,7 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
-
-
+// Set up BLE Server information
 void setupBLE() {
 
   // Create the BLE Device
@@ -92,23 +98,23 @@ void setupBLE() {
   pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
   BLEDevice::startAdvertising();
   Serial.println("Waiting a client connection to notify...");
+
+  if (!deviceConnected) {
+    tft.setTextColor(TFT_RED, TFT_BLACK);
+    tft.println("Waiting for connecting Bluetooth!");
+  }
 }
 
+// Set up Heatbeat Program
 void setupBPM()
 {
-    tft.init();
-    tft.setRotation(1);
-    tft.setTextColor(TFT_GREEN, TFT_BLACK); // Note: the new fonts do not draw the background colour
-    tft.fillScreen(TFT_BLACK);
-    tft.setCursor(0, 0);
-
     pinMode(LED_PIN, OUTPUT);
 
     Wire1.begin(HEATRATE_SDA, HEATRATE_SCL);
     // Initialize sensor
     if (!particleSensor.begin(Wire1, 400000)) { //Use default I2C port, 400kHz speed
         tft.setTextColor(TFT_RED, TFT_BLACK); // Note: the new fonts do not draw the background colour
-        tft.println("MAX30105 was not found");
+        tft.println("MAX30105 was not found!");
         delay(10000);   //delay ten sec to restart
         esp_restart();
     }
@@ -118,8 +124,19 @@ void setupBPM()
     particleSensor.setPulseAmplitudeGreen(0); //Turn off Green LED
 }
 
+void setupTFT() {
+  // Configure the screen
+  tft.init();
+  tft.setRotation(1);
+  tft.setTextColor(TFT_GREEN, TFT_BLACK); // Note: the new fonts do not draw the background colour
+  tft.fillScreen(TFT_BLACK);
+  tft.setCursor(0, 0);
+}
+
 void setup() {
   Serial.begin(115200);
+
+  setupTFT();
   setupBLE();
   setupBPM();
 }
@@ -159,8 +176,12 @@ void loop() {
         else
             digitalWrite(LED_PIN, !digitalRead(LED_PIN));
 
+        // In order to read clearly in smart phone,
+        // convert BPM value as char array.
+        char strBPM[5];
+        dtostrf(beatsPerMinute, 3, 0, strBPM);
       
-        pCharacteristic->setValue(beatsPerMinute);
+        pCharacteristic->setValue(strBPM);
         pCharacteristic->notify();
         
         delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
@@ -171,6 +192,9 @@ void loop() {
         delay(500); // give the bluetooth stack the chance to get things ready
         pServer->startAdvertising(); // restart advertising
         Serial.println("start advertising");
+        setupTFT();
+        tft.setTextColor(TFT_RED, TFT_BLACK);
+        tft.println("Waiting for connecting Bluetooth!");
         oldDeviceConnected = deviceConnected;
     }
     
