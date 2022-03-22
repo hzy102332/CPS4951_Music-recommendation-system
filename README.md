@@ -1,5 +1,5 @@
 # CPS4951_Music-recommendation-system
-## Project Description
+### Project Description
 The core functionality of this system is to implement the precise music
 recommendation by interacting with real-time data from users. Firstly, users of
 the system will wear the T-Wristband smart bracelet, which measures the user's
@@ -12,7 +12,7 @@ bracelet to provide reference information. The formation of efficient and real-t
 information communication between the user's bracelet and the software is an
 important technical difficulty of this software.
 
-#Module Description
+# Module Description
 
 ### BPM_WITH_BLE.txt
 This file is a built-in program of the wristband written in C language. It measures the user's heart rate through the heartbeat module, and then communicates with the mobile phone through the Bluetooth module.
