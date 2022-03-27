@@ -13,7 +13,7 @@ information communication between the user's bracelet and the software is an
 important technical difficulty of this software.
 
 # Module Description
-
+[百度](http://baidu.com)
 ### BPM_WITH_BLE.txt
 This file is a built-in program of the wristband written in C language. It measures the user's heart rate through the heartbeat module, and then communicates with the mobile phone through the Bluetooth module.
 
