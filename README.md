@@ -11,7 +11,7 @@ sophisticated recommendation algorithm, and transmit it back to the client's
 bracelet to provide reference information. The formation of efficient and real-time
 information communication between the user's bracelet and the software is an
 important technical difficulty of this software.
----
+
 # Introduction of Program Upload (Hardware Related) of Our Project
 **TO ENSURE THAT EVERYTHING WORKS CORRECTLY, PLEASE STRICTYLY FOLLOW THE FOLLOWING STEPS:**
 1. **How to input program into the hardware (esp32)?**
