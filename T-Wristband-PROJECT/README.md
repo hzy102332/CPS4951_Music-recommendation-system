@@ -20,12 +20,3 @@ If you do not know how to clone the code, please refer to the video BV12V411R7EL
 + Since Arduino can only allow you to upload ONE program in one "upload", so you need to connect your programs together into one .ino file. The simplest way is to put void setup() together and put void loop() together. However, you need to test and debug after you putting these programs together.
 The BLE with BPM program has been upload [BPM_WITH_BLE.txt](https://github.com/hzy102332/CPS4951_Music-recommendation-system/blob/main/BPM_WITH_BLE.txt), you can check and do some changes by yourselves.
 
-
-# Module Description
-
-### BPM_WITH_BLE.txt
-This file is a built-in program of the wristband written in C language. It measures the user's heart rate through the heartbeat module, and then communicates with the mobile phone through the Bluetooth module.
-
-### wangyi.py
-This is a file based on the music labels selected by users and then crawls NetEase Cloud music
-###
