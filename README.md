@@ -14,9 +14,15 @@ important technical difficulty of this software.
 
 # Module Description
 
-### BPM_WITH_BLE.txt
-This file is a built-in program of the wristband written in C language. It measures the user's heart rate through the heartbeat module, and then communicates with the mobile phone through the Bluetooth module.
+### AppUI
+This is our mobile app user interface.
+
+### T-Wirstband-PROJECT
+This folder contains the programs installed in the **hardware** (wristband). It contains the module code to obtain the user's heartbeat data and the code to communicate with the phone app through Bluetooth.
+
+### bluetooth—demo
+This folder is written in HTML code for bluetooth data communication between mobile phone and wristband. We used **HbuilderX** to package the folder directly to the phone.
 
 ### wangyi.py
 This is a file based on the music labels selected by users and then crawls NetEase Cloud music
-###
+
