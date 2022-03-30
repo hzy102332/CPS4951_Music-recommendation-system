@@ -5,10 +5,10 @@
 + In this project, we used LILYGO T-Wristband ESP32 MPU9250 [H393-06] and L821 Heart Rate Accessories as the hardware to input T-Wristband-MAX3010X heartbeat program. Product [link](https://m.tb.cn/h.fK4waSF?tk=RfcG26ZdBDi).
 + After installing Arduino and having a piece of corresponding hardware, you need to deploy ESP32 development environment in Arduino. The details can be found in [link](https://blog.csdn.net/qq_36332757/article/details/106397455).
 + After finished the above steps, you need to connect your T-Wristband to the computer through ESP32 development board. Show in the picture:
-![](images/1.png)
-+ Open your program (.ino file), click "verify" ("验证") ![](images/2.png)to test your program. If the program has no errors, then it should be like this: ![](images/3.png)
-+ Then, you can upload your program to the board. Click "upload"("上传")![](images/4.png) . If the program has been uploaded succesfully, then it should be like this: ![](images/5.png) **Do not worry about the warning in the bottom!**
-+ OK, you can enjoy the funny of your program!**NOTICE:** When you testing your program on your hardware, if you encounter any problems, please try restarting first! Press the botton showed in the picture! ![](images/6.png) More details can be found in the video BV12V411R7EL (Bilibili.com).
+![](../images/1.png)
++ Open your program (.ino file), click "verify" ("验证") ![](../images/2.png)to test your program. If the program has no errors, then it should be like this: ![](../images/3.png)
++ Then, you can upload your program to the board. Click "upload"("上传")![](../images/4.png) . If the program has been uploaded succesfully, then it should be like this: ![](../images/5.png) **Do not worry about the warning in the bottom!**
++ OK, you can enjoy the funny of your program!**NOTICE:** When you testing your program on your hardware, if you encounter any problems, please try restarting first! Press the botton showed in the picture! ![](../images/6.png) More details can be found in the video BV12V411R7EL (Bilibili.com).
  
 2.	**Where to find the corresponding heartbeat program (MAX3010X)?**
 Refer to [link](https://github.com/Xinyuan-LilyGO/LilyGo-T-Wristband)
