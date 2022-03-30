@@ -18,5 +18,5 @@ If you do not know how to clone the code, please refer to the video BV12V411R7EL
 + More knowledge about BLE can be found in this website. You can find how to receive data in your smart phone in this website as well.
 4.	**How to connect BLE Server program and T-Wristband MAX3010X program (or how to bundle some programs and upload them to the board)?**
 + Since Arduino can only allow you to upload ONE program in one "upload", so you need to connect your programs together into one .ino file. The simplest way is to put void setup() together and put void loop() together. However, you need to test and debug after you putting these programs together.
-The BLE with BPM program has been upload [BPM_WITH_BLE.txt](https://github.com/hzy102332/CPS4951_Music-recommendation-system/blob/main/BPM_WITH_BLE.txt), you can check and do some changes by yourselves.
+The BLE with BPM program has been upload , you can check and do some changes by yourselves.
 
