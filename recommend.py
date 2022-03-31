@@ -2,6 +2,12 @@ import math
 import time
 import matplotlib.pyplot as plt
 
+'''
+This fule only to show how recommend works
+YOU DO NOT HAVE PUT IT INTO THE COMPLETE PROJECT
+Problem? try to find Maverick and ask him XD
+'''
+
 # time.localtime().tm_hour
 '''
 Function: Base on the state, bpm of user and current time (hour), recommend music types
