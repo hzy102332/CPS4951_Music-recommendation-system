@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>html5+ android蓝牙操作</title>
+</head>
+
+<body>
+<div id="app">
+    <br/>
+    <input type="button" id="turnOnBluetooth" value="打开蓝牙" onclick="turnOnBluetooth()"/>
+    <input type="button" id="turnOffBluetooth" value="关闭蓝牙" onclick="turnOffBluetooth()"/>
+    <input type="button" id="initBluetooth" value="初始化蓝牙" onclick="initBluetooth()"/>
+    <br/>
+    <br/>
+
+    <input type="button" id="getPairedDevices" value="已配对的设备" onclick="getPairedDevices()"/>
+    <input type="button" id="discoveryNewDevice" value="搜索蓝牙设备" onclick="discoveryNewDevice()"/>
+    <br/>
+
+    <div> 
+        蓝牙状态
+        <br/>
+        &#12288;&#12288;启动状态：<span id="bluetoothEnable"></span>
+        <br/>
+        &#12288;&#12288;蓝牙状态：<span id="bluetoothState"></span>
+        <br/>
+        &#12288;&#12288;搜索状态：<span id="discoveryDeviceState"></span>
+        <br/>
+        &#12288;&#12288;监听状态：<span id="readThreadState"></span>
+    </div>
+    <br/>
+
+    <div>
+        消息：<span id="msg"></span>
+    </div>
+    <br/>
+
+    <div>
+        <input type="button" id="getConnectedBluetoothDevices" value="已连接的设备" onclick="getConnectedBluetoothDevices()"/>
+        <input type="button" id="disConnDevice" value="断开连接" onclick="disConnDevice()"/>
+        <input type="button" id="clearList" value="清空列表" onclick="clearList()"/>
+    </div>
+
+    已配对的设备：
+    <ul id="pairedDevices"></ul>
+
+    <!-- 搜索蓝牙设备：<br> -->
+    名称：JDY-08 &nbsp;&nbsp;&nbsp;
+    <input type="button" id="connDevice" value="连接" onclick="connDevice('D8:A9:8B:7E:EF:33')"/>
+    <ul id="newDevices"></ul>
+
+    <div>
+        发送数据：<!-- 
+        <textarea cols="20" rows="4" id="sendData"><What is time?></textarea>
+		<input type="button" id="onSendData" value="发送" onclick="onSendData()"/> -->
+		<br/>
+		服&nbsp;&nbsp;&nbsp;&nbsp;务：<input id="service" type="text" disabled="disabled"></input>
+		<a href="#" onclick="selectService()">选择</a>
+		<br/>
+		特征值：<input id="characteristic" type="text" disabled="disabled"></input>
+		<a href="#" onclick="selectCharacteristic()">选择</a>
+    </div>
+    <br>
+
+    <div style="margin-bottom: 100px;">
+        接收的数据
+        <input type="button" id="readData" value="启动监听" onclick="readDataPeriodically()"/>
+		<input type="button" id="stopread" value="停止监听" onclick="stopread()"/>
+        <input type="button" id="clearData" value="清空" onclick="clearData()"/>
+        <div style="width: 100%;min-height: 50px;">
+            byte数组:
+            <br><span id="receiveDataArr"></span>
+        </div>
+        <div style="width: 100%;min-height: 50px;word-wrap:break-word;">
+            对应的string字符串:
+            <br><span id="receiveDataStr"></span>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="js/assets/jquery-1.11.1.js"></script>
+<script type="text/javascript" src="js/BluetoothTool.js"></script>
+<script type="text/javascript">
+    // 监听plusready事件
+    document.addEventListener("plusready", function () {
+        //// 扩展API加载完毕，现在可以正常调用扩展API
+        onPlusReady();
+    }, false);
+</script>
+
+</body>
+
+</html>
