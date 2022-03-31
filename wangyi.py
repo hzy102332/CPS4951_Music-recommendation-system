@@ -6,8 +6,7 @@ import time
 import math
 import time
 import matplotlib.pyplot as plt
-
-
+#使用前请先下载chrome浏览器对应版本的chromedriver并且在73行添加路径，具体可以查询webdriver的用法
 # time.localtime().tm_hour
 
 #推荐算法
@@ -71,7 +70,7 @@ mark = recommand("work", int(data_frame1['bpm'].values[0]), time.localtime().tm_
 print("----------------------------")
 print("Based on the analysis, recommend the following song types for you:"+mark+"\n")
 print("Loading music........")
-chrome_options = webdriver.ChromeOptions()
+chrome_options = webdriver.ChromeOptions()#在此添加路径（windows），mac将chromedriver添加环境变量后无需指定路径
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument('blink-settings=imagesEnabled=false')
