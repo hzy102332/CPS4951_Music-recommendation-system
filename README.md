@@ -26,3 +26,11 @@ This folder is written in HTML code for bluetooth data communication between mob
 ### wangyi.py
 This is a file based on the music labels selected by users and then crawls NetEase Cloud music
 
+## The function we have solved
+* transfer data from brand to moblie app (developed by html5+) through bluethooth low engergy(BLE)
+* using python to get wangyi website music html iframe with user infomation
+* **(Need to optimize) recommendation alogrithm (python) and moblie app user interface (HTML + CSS)**
+
+## The function we need to solve
+* how to upload the data from front end to back end (cloud database)
+
